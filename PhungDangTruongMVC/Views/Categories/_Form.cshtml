@@ -1,0 +1,44 @@
+@model BusinessObjects.Category
+@{
+    var isNew = Model.CategoryId == 0;
+    var parents = (List<BusinessObjects.Category>)ViewBag.Parents;
+}
+
+<form asp-controller="Categories" asp-action="@(isNew ? "Create" : "Edit")" method="post" data-ajax-form>
+    <div class="modal-header">
+        <h5 class="modal-title">@(isNew ? "New category" : "Edit category")</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="CategoryId" />
+        <div class="mb-3">
+            <label asp-for="CategoryName" class="form-label"></label>
+            <input asp-for="CategoryName" class="form-control" />
+            <span asp-validation-for="CategoryName" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="CategoryDesciption" class="form-label"></label>
+            <textarea asp-for="CategoryDesciption" class="form-control" rows="3"></textarea>
+            <span asp-validation-for="CategoryDesciption" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="ParentCategoryId" class="form-label"></label>
+            <select asp-for="ParentCategoryId" class="form-select">
+                <option value="">(none)</option>
+                @foreach (var p in parents)
+                {
+                    <option value="@p.CategoryId" selected="@(Model.ParentCategoryId == p.CategoryId)">@p.CategoryName</option>
+                }
+            </select>
+        </div>
+        <div class="form-check">
+            <input asp-for="IsActive" class="form-check-input" />
+            <label asp-for="IsActive" class="form-check-label"></label>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+</form>

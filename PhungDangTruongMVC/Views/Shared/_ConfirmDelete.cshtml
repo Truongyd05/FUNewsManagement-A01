@@ -1,0 +1,23 @@
+@model PhungDangTruongMVC.Models.ConfirmDeleteViewModel
+
+<form asp-controller="@Model.Controller" asp-action="Delete" method="post" data-ajax-form>
+    <div class="modal-header">
+        <h5 class="modal-title">Confirm delete</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <input type="hidden" name="id" value="@Model.Id" />
+        <p>@Model.Message</p>
+        @if (!string.IsNullOrEmpty(Model.Error))
+        {
+            <div class="alert alert-danger mb-0">@Model.Error</div>
+        }
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        @if (string.IsNullOrEmpty(Model.Error) || Model.Error.StartsWith("Cannot") == false)
+        {
+            <button type="submit" class="btn btn-danger">Delete</button>
+        }
+    </div>
+</form>

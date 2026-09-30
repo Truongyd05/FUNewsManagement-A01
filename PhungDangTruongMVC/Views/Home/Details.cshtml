@@ -1,0 +1,18 @@
+@model BusinessObjects.NewsArticle
+@{
+    ViewData["Title"] = Model.NewsTitle;
+}
+
+<a asp-action="Index" class="btn btn-link ps-0">&larr; Back to news</a>
+<h2>@Model.NewsTitle</h2>
+<p class="lead">@Model.Headline</p>
+<p class="text-muted small">
+    @Model.Category?.CategoryName · @Model.CreatedDate?.ToString("dd/MM/yyyy") · by @Model.CreatedBy?.AccountName · Source: @Model.NewsSource
+</p>
+<div style="white-space: pre-wrap">@Model.NewsContent</div>
+<div class="mt-3">
+    @foreach (var t in Model.Tags)
+    {
+        <span class="badge bg-secondary">@t.TagName</span>
+    }
+</div>

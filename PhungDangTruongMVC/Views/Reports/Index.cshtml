@@ -1,0 +1,80 @@
+@model PhungDangTruongMVC.Models.ReportViewModel
+@{
+    ViewData["Title"] = "Report";
+}
+
+<h2>News statistic report</h2>
+
+<form method="get" class="row g-2 mb-3">
+    <div asp-validation-summary="ModelOnly" class="text-danger col-12"></div>
+    <div class="col-md-3">
+        <label asp-for="StartDate" class="form-label"></label>
+        <input asp-for="StartDate" type="date" value="@Model.StartDate.ToString("yyyy-MM-dd")" name="startDate" class="form-control" required />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="EndDate" class="form-label"></label>
+        <input asp-for="EndDate" type="date" value="@Model.EndDate.ToString("yyyy-MM-dd")" name="endDate" class="form-control" required />
+    </div>
+    <div class="col-md-3 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary">Generate report</button>
+    </div>
+</form>
+
+@if (Model.Articles != null)
+{
+    var articles = Model.Articles;
+    <div class="row mb-3">
+        <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted">Total articles</div><div class="fs-3">@articles.Count</div></div></div></div>
+        <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted">Active</div><div class="fs-3">@articles.Count(a => a.NewsStatus == true)</div></div></div></div>
+        <div class="col-md-3"><div class="card"><div class="card-body"><div class="text-muted">Inactive</div><div class="fs-3">@articles.Count(a => a.NewsStatus != true)</div></div></div></div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h5>By category</h5>
+            <table class="table table-sm">
+                <thead><tr><th>Category</th><th>Articles</th></tr></thead>
+                <tbody>
+                    @foreach (var g in articles.GroupBy(a => a.Category?.CategoryName ?? "(none)").OrderByDescending(g => g.Count()))
+                    {
+                        <tr><td>@g.Key</td><td>@g.Count()</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-6">
+            <h5>By author</h5>
+            <table class="table table-sm">
+                <thead><tr><th>Author</th><th>Articles</th></tr></thead>
+                <tbody>
+                    @foreach (var g in articles.GroupBy(a => a.CreatedBy?.AccountName ?? "(unknown)").OrderByDescending(g => g.Count()))
+                    {
+                        <tr><td>@g.Key</td><td>@g.Count()</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <h5>Articles (newest first)</h5>
+    <table class="table table-striped table-hover">
+        <thead><tr><th>ID</th><th>Title</th><th>Category</th><th>Author</th><th>Created</th><th>Status</th></tr></thead>
+        <tbody>
+            @foreach (var a in articles)
+            {
+                <tr>
+                    <td>@a.NewsArticleId</td>
+                    <td>@a.NewsTitle</td>
+                    <td>@a.Category?.CategoryName</td>
+                    <td>@a.CreatedBy?.AccountName</td>
+                    <td>@a.CreatedDate?.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@(a.NewsStatus == true ? "Active" : "Inactive")</td>
+                </tr>
+            }
+            @if (articles.Count == 0)
+            {
+                <tr><td colspan="6" class="text-center text-muted">No articles in this period.</td></tr>
+            }
+        </tbody>
+    </table>
+}

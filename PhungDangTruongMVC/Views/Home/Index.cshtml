@@ -1,0 +1,47 @@
+@model List<BusinessObjects.NewsArticle>
+@{
+    ViewData["Title"] = "News";
+    var categories = (List<BusinessObjects.Category>)ViewBag.Categories;
+}
+
+<h2>News</h2>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-5">
+        <input name="keyword" value="@ViewBag.Keyword" class="form-control" placeholder="Search title, headline, content or tag..." />
+    </div>
+    <div class="col-md-3">
+        <select name="categoryId" class="form-select">
+            <option value="">All categories</option>
+            @foreach (var c in categories)
+            {
+                <option value="@c.CategoryId" selected="@(ViewBag.CategoryId == c.CategoryId)">@c.CategoryName</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-4">
+        <button type="submit" class="btn btn-primary">Search</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Reset</a>
+    </div>
+</form>
+
+@if (Model.Count == 0)
+{
+    <div class="alert alert-info">No news found.</div>
+}
+@foreach (var n in Model)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title"><a asp-action="Details" asp-route-id="@n.NewsArticleId">@n.NewsTitle</a></h5>
+            <h6 class="card-subtitle mb-2 text-muted">@n.Headline</h6>
+            <p class="card-text small text-muted mb-1">
+                @n.Category?.CategoryName · @n.CreatedDate?.ToString("dd/MM/yyyy") · by @n.CreatedBy?.AccountName
+            </p>
+            @foreach (var t in n.Tags)
+            {
+                <span class="badge bg-secondary">@t.TagName</span>
+            }
+        </div>
+    </div>
+}

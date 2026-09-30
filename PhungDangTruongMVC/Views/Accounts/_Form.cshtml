@@ -1,0 +1,42 @@
+@model BusinessObjects.SystemAccount
+@{
+    var isNew = Model.AccountId == 0;
+}
+
+<form asp-controller="Accounts" asp-action="@(isNew ? "Create" : "Edit")" method="post" data-ajax-form>
+    <div class="modal-header">
+        <h5 class="modal-title">@(isNew ? "New account" : "Edit account")</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="AccountId" />
+        <div class="mb-3">
+            <label asp-for="AccountName" class="form-label"></label>
+            <input asp-for="AccountName" class="form-control" />
+            <span asp-validation-for="AccountName" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="AccountEmail" class="form-label"></label>
+            <input asp-for="AccountEmail" class="form-control" />
+            <span asp-validation-for="AccountEmail" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="AccountRole" class="form-label"></label>
+            <select asp-for="AccountRole" class="form-select">
+                <option value="1">Staff</option>
+                <option value="2">Lecturer</option>
+            </select>
+            <span asp-validation-for="AccountRole" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="AccountPassword" class="form-label"></label>
+            <input asp-for="AccountPassword" class="form-control" type="text" />
+            <span asp-validation-for="AccountPassword" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+</form>

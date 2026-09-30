@@ -1,0 +1,70 @@
+@model List<BusinessObjects.NewsArticle>
+@{
+    var history = (bool)ViewBag.IsHistory;
+    ViewData["Title"] = history ? "My news history" : "Manage news";
+    var categories = (List<BusinessObjects.Category>)ViewBag.Categories;
+    var action = history ? "History" : "Index";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">@ViewData["Title"]</h2>
+    <button class="btn btn-success" data-modal-url="@Url.Action("Create")">+ New article</button>
+</div>
+
+<form method="get" asp-action="@action" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <input name="keyword" value="@ViewBag.Keyword" class="form-control" placeholder="Search title, headline, content or tag..." />
+    </div>
+    <div class="col-md-3">
+        <select name="categoryId" class="form-select">
+            <option value="">All categories</option>
+            @foreach (var c in categories)
+            {
+                <option value="@c.CategoryId" selected="@(ViewBag.CategoryId == c.CategoryId)">@c.CategoryName</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select name="status" class="form-select">
+            <option value="">All statuses</option>
+            <option value="true" selected="@(ViewBag.Status == true)">Active</option>
+            <option value="false" selected="@(ViewBag.Status == false)">Inactive</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <button type="submit" class="btn btn-primary">Search</button>
+        <a asp-action="@action" class="btn btn-outline-secondary">Reset</a>
+    </div>
+</form>
+
+<table class="table table-striped table-hover align-middle">
+    <thead>
+        <tr><th>ID</th><th>Title</th><th>Category</th><th>Tags</th><th>Created</th><th>Author</th><th>Status</th><th></th></tr>
+    </thead>
+    <tbody>
+        @foreach (var n in Model)
+        {
+            <tr>
+                <td>@n.NewsArticleId</td>
+                <td>@n.NewsTitle</td>
+                <td>@n.Category?.CategoryName</td>
+                <td>@string.Join(", ", n.Tags.Select(t => t.TagName))</td>
+                <td>@n.CreatedDate?.ToString("dd/MM/yyyy")</td>
+                <td>@n.CreatedBy?.AccountName</td>
+                <td>
+                    @if (n.NewsStatus == true) { <span class="badge bg-success">Active</span> }
+                    else { <span class="badge bg-secondary">Inactive</span> }
+                </td>
+                <td class="text-end text-nowrap">
+                    <button class="btn btn-sm btn-outline-secondary" data-modal-url="@Url.Action("Details", new { id = n.NewsArticleId })">View</button>
+                    <button class="btn btn-sm btn-outline-primary" data-modal-url="@Url.Action("Edit", new { id = n.NewsArticleId })">Edit</button>
+                    <button class="btn btn-sm btn-outline-danger" data-modal-url="@Url.Action("Delete", new { id = n.NewsArticleId })">Delete</button>
+                </td>
+            </tr>
+        }
+        @if (Model.Count == 0)
+        {
+            <tr><td colspan="8" class="text-center text-muted">No news articles found.</td></tr>
+        }
+    </tbody>
+</table>
