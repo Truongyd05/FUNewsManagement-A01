@@ -1,28 +1,48 @@
 @model PhungDangTruongMVC.Models.LoginViewModel
 @{
     ViewData["Title"] = "Login";
+    Layout = "_Layout";
 }
 
-<div class="row justify-content-center mt-5">
-    <div class="col-md-5">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <h3 class="card-title text-center mb-4">FU News Management</h3>
+<div class="fnm-auth-wrap">
+    <div class="col-md-5 col-lg-4 col-xl-3">
+        <div class="card fnm-auth-card">
+            <div class="card-body p-4 p-md-5">
+                <div class="fnm-auth-brand">
+                    <span class="fnm-brand-mark" aria-hidden="true">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    </span>
+                    <h3 class="mt-3">FU News Management</h3>
+                    <p>Sign in to continue</p>
+                </div>
+
                 <form asp-action="Login" method="post">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2"></div>
                     <div class="mb-3">
                         <label asp-for="Email" class="form-label"></label>
-                        <input asp-for="Email" class="form-control" autofocus />
-                        <span asp-validation-for="Email" class="text-danger"></span>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg>
+                            </span>
+                            <input asp-for="Email" class="form-control" autofocus placeholder="you@example.com" />
+                        </div>
+                        <span asp-validation-for="Email" class="text-danger small"></span>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-4">
                         <label asp-for="Password" class="form-label"></label>
-                        <input asp-for="Password" class="form-control" />
-                        <span asp-validation-for="Password" class="text-danger"></span>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            </span>
+                            <input asp-for="Password" class="form-control" placeholder="••••••••" />
+                        </div>
+                        <span asp-validation-for="Password" class="text-danger small"></span>
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                    <button type="submit" class="btn btn-primary w-100 py-2">Login</button>
                 </form>
-                <hr />
+
+                <hr class="my-4" />
+
                 <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary w-100">Browse news as guest</a>
             </div>
         </div>

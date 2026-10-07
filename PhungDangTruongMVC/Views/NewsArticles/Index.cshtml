@@ -6,12 +6,15 @@
     var action = history ? "History" : "Index";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="mb-0">@ViewData["Title"]</h2>
-    <button class="btn btn-success" data-modal-url="@Url.Action("Create")">+ New article</button>
+<div class="fnm-page-head">
+    <h1 class="fnm-page-title">@ViewData["Title"]</h1>
+    <button class="btn btn-success" data-modal-url="@Url.Action("Create")">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+        New article
+    </button>
 </div>
 
-<form method="get" asp-action="@action" class="row g-2 mb-3">
+<form method="get" asp-action="@action" class="row g-2 mb-4 fnm-filters">
     <div class="col-md-4">
         <input name="keyword" value="@ViewBag.Keyword" class="form-control" placeholder="Search title, headline, content or tag..." />
     </div>
@@ -37,34 +40,36 @@
     </div>
 </form>
 
-<table class="table table-striped table-hover align-middle">
-    <thead>
-        <tr><th>ID</th><th>Title</th><th>Category</th><th>Tags</th><th>Created</th><th>Author</th><th>Status</th><th></th></tr>
-    </thead>
-    <tbody>
-        @foreach (var n in Model)
-        {
-            <tr>
-                <td>@n.NewsArticleId</td>
-                <td>@n.NewsTitle</td>
-                <td>@n.Category?.CategoryName</td>
-                <td>@string.Join(", ", n.Tags.Select(t => t.TagName))</td>
-                <td>@n.CreatedDate?.ToString("dd/MM/yyyy")</td>
-                <td>@n.CreatedBy?.AccountName</td>
-                <td>
-                    @if (n.NewsStatus == true) { <span class="badge bg-success">Active</span> }
-                    else { <span class="badge bg-secondary">Inactive</span> }
-                </td>
-                <td class="text-end text-nowrap">
-                    <button class="btn btn-sm btn-outline-secondary" data-modal-url="@Url.Action("Details", new { id = n.NewsArticleId })">View</button>
-                    <button class="btn btn-sm btn-outline-primary" data-modal-url="@Url.Action("Edit", new { id = n.NewsArticleId })">Edit</button>
-                    <button class="btn btn-sm btn-outline-danger" data-modal-url="@Url.Action("Delete", new { id = n.NewsArticleId })">Delete</button>
-                </td>
-            </tr>
-        }
-        @if (Model.Count == 0)
-        {
-            <tr><td colspan="8" class="text-center text-muted">No news articles found.</td></tr>
-        }
-    </tbody>
-</table>
+<div class="fnm-table-wrap">
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr><th>ID</th><th>Title</th><th>Category</th><th>Tags</th><th>Created</th><th>Author</th><th>Status</th><th class="text-end">Actions</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var n in Model)
+            {
+                <tr>
+                    <td class="text-muted">@n.NewsArticleId</td>
+                    <td class="fw-semibold">@n.NewsTitle</td>
+                    <td>@n.Category?.CategoryName</td>
+                    <td class="text-muted">@string.Join(", ", n.Tags.Select(t => t.TagName))</td>
+                    <td class="text-muted">@n.CreatedDate?.ToString("dd/MM/yyyy")</td>
+                    <td>@n.CreatedBy?.AccountName</td>
+                    <td>
+                        @if (n.NewsStatus == true) { <span class="badge bg-success">Active</span> }
+                        else { <span class="badge bg-secondary">Inactive</span> }
+                    </td>
+                    <td class="text-end text-nowrap">
+                        <button class="btn btn-sm btn-outline-secondary fnm-action-btn" title="View" data-modal-url="@Url.Action("Details", new { id = n.NewsArticleId })">View</button>
+                        <button class="btn btn-sm btn-outline-primary fnm-action-btn" title="Edit" data-modal-url="@Url.Action("Edit", new { id = n.NewsArticleId })">Edit</button>
+                        <button class="btn btn-sm btn-outline-danger fnm-action-btn" title="Delete" data-modal-url="@Url.Action("Delete", new { id = n.NewsArticleId })">Delete</button>
+                    </td>
+                </tr>
+            }
+            @if (Model.Count == 0)
+            {
+                <tr><td colspan="8" class="fnm-empty text-center text-muted">No news articles found.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
