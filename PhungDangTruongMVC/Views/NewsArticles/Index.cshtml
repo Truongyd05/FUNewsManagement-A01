@@ -7,19 +7,22 @@
 }
 
 <div class="fnm-page-head">
-    <h1 class="fnm-page-title">@ViewData["Title"]</h1>
-    <button class="btn btn-success" data-modal-url="@Url.Action("Create")">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+    <div>
+        <span class="fnm-kicker">@(history ? "My work" : "Newsroom")</span>
+        <h1 class="fnm-page-title">@ViewData["Title"]</h1>
+    </div>
+    <button class="btn btn-primary" data-modal-url="@Url.Action("Create")">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
         New article
     </button>
 </div>
 
-<form method="get" asp-action="@action" class="row g-2 mb-4 fnm-filters">
+<form method="get" asp-action="@action" class="fnm-filters row g-2 align-items-center">
     <div class="col-md-4">
-        <input name="keyword" value="@ViewBag.Keyword" class="form-control" placeholder="Search title, headline, content or tag..." />
+        <input name="keyword" value="@ViewBag.Keyword" class="form-control" placeholder="Search title, headline, content or tag…" aria-label="Search articles" />
     </div>
     <div class="col-md-3">
-        <select name="categoryId" class="form-select">
+        <select name="categoryId" class="form-select" aria-label="Category">
             <option value="">All categories</option>
             @foreach (var c in categories)
             {
@@ -28,48 +31,55 @@
         </select>
     </div>
     <div class="col-md-2">
-        <select name="status" class="form-select">
+        <select name="status" class="form-select" aria-label="Status">
             <option value="">All statuses</option>
             <option value="true" selected="@(ViewBag.Status == true)">Active</option>
             <option value="false" selected="@(ViewBag.Status == false)">Inactive</option>
         </select>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3 d-flex gap-2">
         <button type="submit" class="btn btn-primary">Search</button>
         <a asp-action="@action" class="btn btn-outline-secondary">Reset</a>
     </div>
 </form>
 
-<div class="fnm-table-wrap">
-    <table class="table table-hover align-middle">
-        <thead>
-            <tr><th>ID</th><th>Title</th><th>Category</th><th>Tags</th><th>Created</th><th>Author</th><th>Status</th><th class="text-end">Actions</th></tr>
-        </thead>
-        <tbody>
-            @foreach (var n in Model)
-            {
-                <tr>
-                    <td class="text-muted">@n.NewsArticleId</td>
-                    <td class="fw-semibold">@n.NewsTitle</td>
-                    <td>@n.Category?.CategoryName</td>
-                    <td class="text-muted">@string.Join(", ", n.Tags.Select(t => t.TagName))</td>
-                    <td class="text-muted">@n.CreatedDate?.ToString("dd/MM/yyyy")</td>
-                    <td>@n.CreatedBy?.AccountName</td>
-                    <td>
-                        @if (n.NewsStatus == true) { <span class="badge bg-success">Active</span> }
-                        else { <span class="badge bg-secondary">Inactive</span> }
-                    </td>
-                    <td class="text-end text-nowrap">
-                        <button class="btn btn-sm btn-outline-secondary fnm-action-btn" title="View" data-modal-url="@Url.Action("Details", new { id = n.NewsArticleId })">View</button>
-                        <button class="btn btn-sm btn-outline-primary fnm-action-btn" title="Edit" data-modal-url="@Url.Action("Edit", new { id = n.NewsArticleId })">Edit</button>
-                        <button class="btn btn-sm btn-outline-danger fnm-action-btn" title="Delete" data-modal-url="@Url.Action("Delete", new { id = n.NewsArticleId })">Delete</button>
-                    </td>
-                </tr>
-            }
-            @if (Model.Count == 0)
-            {
-                <tr><td colspan="8" class="fnm-empty text-center text-muted">No news articles found.</td></tr>
-            }
-        </tbody>
-    </table>
-</div>
+<table class="fnm-table align-middle">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Tags</th>
+            <th>Created</th>
+            <th>Author</th>
+            <th>Status</th>
+            <th class="fnm-cell-actions">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var n in Model)
+        {
+            <tr>
+                <td class="fnm-cell-id">@n.NewsArticleId</td>
+                <td class="fnm-cell-title">@n.NewsTitle</td>
+                <td>@n.Category?.CategoryName</td>
+                <td class="fnm-cell-muted">@string.Join(", ", n.Tags.Select(t => t.TagName))</td>
+                <td class="fnm-cell-muted">@n.CreatedDate?.ToString("dd/MM/yyyy")</td>
+                <td>@n.CreatedBy?.AccountName</td>
+                <td>
+                    @if (n.NewsStatus == true) { <span class="fnm-badge is-active">Active</span> }
+                    else { <span class="fnm-badge is-muted">Inactive</span> }
+                </td>
+                <td class="fnm-cell-actions">
+                    <button class="btn btn-sm btn-outline-secondary" title="View" data-modal-url="@Url.Action("Details", new { id = n.NewsArticleId })">View</button>
+                    <button class="btn btn-sm btn-outline-primary" title="Edit" data-modal-url="@Url.Action("Edit", new { id = n.NewsArticleId })">Edit</button>
+                    <button class="btn btn-sm btn-outline-danger" title="Delete" data-modal-url="@Url.Action("Delete", new { id = n.NewsArticleId })">Delete</button>
+                </td>
+            </tr>
+        }
+        @if (Model.Count == 0)
+        {
+            <tr><td colspan="8" class="fnm-empty text-center text-muted">No news articles found.</td></tr>
+        }
+    </tbody>
+</table>

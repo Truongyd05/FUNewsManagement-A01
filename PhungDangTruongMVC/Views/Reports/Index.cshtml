@@ -4,10 +4,13 @@
 }
 
 <div class="fnm-page-head">
-    <h1 class="fnm-page-title">News statistics</h1>
+    <div>
+        <span class="fnm-kicker">Statistics</span>
+        <h1 class="fnm-page-title">News report</h1>
+    </div>
 </div>
 
-<form method="get" class="row g-2 mb-4 fnm-filters">
+<form method="get" class="fnm-filters row g-2 align-items-end">
     <div asp-validation-summary="ModelOnly" class="text-danger col-12"></div>
     <div class="col-md-3">
         <label asp-for="StartDate" class="form-label"></label>
@@ -17,9 +20,9 @@
         <label asp-for="EndDate" class="form-label"></label>
         <input asp-for="EndDate" type="date" value="@Model.EndDate.ToString("yyyy-MM-dd")" name="endDate" class="form-control" required />
     </div>
-    <div class="col-md-3 d-flex align-items-end">
+    <div class="col-md-3">
         <button type="submit" class="btn btn-primary w-100">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
             Generate report
         </button>
     </div>
@@ -28,72 +31,84 @@
 @if (Model.Articles != null)
 {
     var articles = Model.Articles;
-    <div class="row g-3 mb-4">
-        <div class="col-sm-6 col-xl-3"><div class="card fnm-stat"><div class="card-body"><div class="text-muted small">Total articles</div><div class="fs-3">@articles.Count</div></div></div></div>
-        <div class="col-sm-6 col-xl-3"><div class="card fnm-stat"><div class="card-body"><div class="text-muted small">Active</div><div class="fs-3">@articles.Count(a => a.NewsStatus == true)</div></div></div></div>
-        <div class="col-sm-6 col-xl-3"><div class="card fnm-stat"><div class="card-body"><div class="text-muted small">Inactive</div><div class="fs-3">@articles.Count(a => a.NewsStatus != true)</div></div></div></div>
-        <div class="col-sm-6 col-xl-3"><div class="card fnm-stat"><div class="card-body"><div class="text-muted small">Authors</div><div class="fs-3">@articles.Select(a => a.CreatedById).Distinct().Count()</div></div></div></div>
-    </div>
 
-    <div class="row g-4 mb-4">
-        <div class="col-lg-6">
-            <div class="card h-100">
-                <div class="card-header bg-white fw-semibold">By category</div>
-                <div class="card-body p-0">
-                    <table class="table table-sm align-middle mb-0">
-                        <thead><tr><th>Category</th><th class="text-end">Articles</th></tr></thead>
-                        <tbody>
-                            @foreach (var g in articles.GroupBy(a => a.Category?.CategoryName ?? "(none)").OrderByDescending(g => g.Count()))
-                            {
-                                <tr><td>@g.Key</td><td class="text-end"><span class="badge bg-primary">@g.Count()</span></td></tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+    <div class="fnm-stats">
+        <div>
+            <div class="fnm-stat-num">@articles.Count</div>
+            <div class="fnm-stat-label">Total articles</div>
         </div>
-        <div class="col-lg-6">
-            <div class="card h-100">
-                <div class="card-header bg-white fw-semibold">By author</div>
-                <div class="card-body p-0">
-                    <table class="table table-sm align-middle mb-0">
-                        <thead><tr><th>Author</th><th class="text-end">Articles</th></tr></thead>
-                        <tbody>
-                            @foreach (var g in articles.GroupBy(a => a.CreatedBy?.AccountName ?? "(unknown)").OrderByDescending(g => g.Count()))
-                            {
-                                <tr><td>@g.Key</td><td class="text-end"><span class="badge bg-primary">@g.Count()</span></td></tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <div>
+            <div class="fnm-stat-num">@articles.Count(a => a.NewsStatus == true)</div>
+            <div class="fnm-stat-label">Active</div>
+        </div>
+        <div>
+            <div class="fnm-stat-num">@articles.Count(a => a.NewsStatus != true)</div>
+            <div class="fnm-stat-label">Inactive</div>
+        </div>
+        <div>
+            <div class="fnm-stat-num">@articles.Select(a => a.CreatedById).Distinct().Count()</div>
+            <div class="fnm-stat-label">Authors</div>
         </div>
     </div>
 
-    <h2 class="h5 mb-3">Articles (newest first)</h2>
-    <div class="fnm-table-wrap">
-        <table class="table table-hover align-middle mb-0">
-            <thead><tr><th>ID</th><th>Title</th><th>Category</th><th>Author</th><th>Created</th><th>Status</th></tr></thead>
-            <tbody>
-                @foreach (var a in articles)
-                {
-                    <tr>
-                        <td class="text-muted">@a.NewsArticleId</td>
-                        <td class="fw-semibold">@a.NewsTitle</td>
-                        <td>@a.Category?.CategoryName</td>
-                        <td>@a.CreatedBy?.AccountName</td>
-                        <td class="text-muted">@a.CreatedDate?.ToString("dd/MM/yyyy HH:mm")</td>
-                        <td>
-                            @if (a.NewsStatus == true) { <span class="badge bg-success">Active</span> }
-                            else { <span class="badge bg-secondary">Inactive</span> }
-                        </td>
-                    </tr>
-                }
-                @if (articles.Count == 0)
-                {
-                    <tr><td colspan="6" class="fnm-empty text-center text-muted">No articles in this period.</td></tr>
-                }
-            </tbody>
-        </table>
+    <div class="row g-5 mb-4">
+        <div class="col-lg-6">
+            <div class="fnm-section-head fnm-section-head-sm">
+                <h2>By category</h2>
+            </div>
+            <table class="fnm-table">
+                <thead><tr><th>Category</th><th class="fnm-cell-actions">Articles</th></tr></thead>
+                <tbody>
+                    @foreach (var g in articles.GroupBy(a => a.Category?.CategoryName ?? "(none)").OrderByDescending(g => g.Count()))
+                    {
+                        <tr><td>@g.Key</td><td class="fnm-cell-actions">@g.Count()</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-lg-6">
+            <div class="fnm-section-head fnm-section-head-sm">
+                <h2>By author</h2>
+            </div>
+            <table class="fnm-table">
+                <thead><tr><th>Author</th><th class="fnm-cell-actions">Articles</th></tr></thead>
+                <tbody>
+                    @foreach (var g in articles.GroupBy(a => a.CreatedBy?.AccountName ?? "(unknown)").OrderByDescending(g => g.Count()))
+                    {
+                        <tr><td>@g.Key</td><td class="fnm-cell-actions">@g.Count()</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
+
+    <div class="fnm-section-head">
+        <h2>Articles</h2>
+        <span class="fnm-count">Newest first</span>
+    </div>
+    <table class="fnm-table align-middle">
+        <thead>
+            <tr><th>ID</th><th>Title</th><th>Category</th><th>Author</th><th>Created</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var a in articles)
+            {
+                <tr>
+                    <td class="fnm-cell-id">@a.NewsArticleId</td>
+                    <td class="fnm-cell-title">@a.NewsTitle</td>
+                    <td>@a.Category?.CategoryName</td>
+                    <td>@a.CreatedBy?.AccountName</td>
+                    <td class="fnm-cell-muted">@a.CreatedDate?.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>
+                        @if (a.NewsStatus == true) { <span class="fnm-badge is-active">Active</span> }
+                        else { <span class="fnm-badge is-muted">Inactive</span> }
+                    </td>
+                </tr>
+            }
+            @if (articles.Count == 0)
+            {
+                <tr><td colspan="6" class="fnm-empty text-center text-muted">No articles in this period.</td></tr>
+            }
+        </tbody>
+    </table>
 }

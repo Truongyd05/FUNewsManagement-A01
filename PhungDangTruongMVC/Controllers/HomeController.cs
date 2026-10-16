@@ -22,6 +22,16 @@ public class HomeController : Controller
         ViewBag.Keyword = keyword;
         ViewBag.CategoryId = categoryId;
         ViewBag.Categories = _categories.GetActive();
+
+        // Counts for the sidebar are always based on the full active feed,
+        // so filtering by one category does not zero-out the other counters.
+        var activeArticles = _news.Search(null, null, null, activeOnly: true, createdById: null);
+        ViewBag.CategoryCounts = activeArticles
+            .Where(n => n.CategoryId.HasValue)
+            .GroupBy(n => n.CategoryId!.Value)
+            .ToDictionary(g => g.Key, g => g.Count());
+        ViewBag.TotalCount = activeArticles.Count;
+
         return View(_news.Search(keyword, categoryId, null, activeOnly: true, createdById: null));
     }
 

@@ -3,85 +3,102 @@
     var role = User.GetRole();
     var displayName = User.Identity?.Name ?? "";
     var initial = string.IsNullOrEmpty(displayName) ? "?" : displayName.Substring(0, 1).ToUpperInvariant();
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
 }
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Latest news, announcements and stories from the FU News Management newsroom." />
     <title>@ViewData["Title"] - FU News Management</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
     <header class="sticky-top">
-        <nav class="navbar navbar-expand-md navbar-dark fnm-navbar">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-controller="Home" asp-action="Index">
-                    <span class="fnm-brand-mark" aria-hidden="true">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        <div class="fnm-masthead">
+            <div class="container">
+                <a class="fnm-logo" asp-controller="Home" asp-action="Index">
+                    <span class="fnm-logo-mark" aria-hidden="true">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
                     </span>
-                    <span>FU News</span>
+                    <span>FU News<small>University Newsroom</small></span>
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+
+                <div class="fnm-masthead-right">
+                    <span class="fnm-dateline d-none d-lg-inline">@DateTime.Now.ToString("dddd, dd MMMM yyyy")</span>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <span class="fnm-user">
+                            <span class="fnm-avatar">@initial</span>
+                            <span class="d-none d-sm-inline">@displayName</span>
+                            <span class="fnm-role">@role</span>
+                        </span>
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                            <button type="submit" class="fnm-logout">Logout</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a class="fnm-signin" asp-controller="Account" asp-action="Login">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            Sign in
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <nav class="fnm-nav">
+            <div class="container">
+                <button class="fnm-nav-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#fnmNav" aria-expanded="false" aria-controls="fnmNav">
+                    Sections
                 </button>
-                <div class="collapse navbar-collapse" id="mainNav">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">News</a>
+                <div class="collapse fnm-nav-collapse" id="fnmNav">
+                    <ul class="fnm-nav-list">
+                        <li>
+                            <a class="fnm-nav-link @(controller == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index">News</a>
                         </li>
                         @if (role == "Admin")
                         {
-                            <li class="nav-item">
-                                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Accounts" ? "active" : "")" asp-controller="Accounts" asp-action="Index">Accounts</a>
+                            <li>
+                                <a class="fnm-nav-link @(controller == "Accounts" ? "active" : "")" asp-controller="Accounts" asp-action="Index">Accounts</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Reports" ? "active" : "")" asp-controller="Reports" asp-action="Index">Report</a>
+                            <li>
+                                <a class="fnm-nav-link @(controller == "Reports" ? "active" : "")" asp-controller="Reports" asp-action="Index">Report</a>
                             </li>
                         }
                         @if (role == "Staff")
                         {
-                            <li class="nav-item">
-                                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Categories" ? "active" : "")" asp-controller="Categories" asp-action="Index">Categories</a>
+                            <li>
+                                <a class="fnm-nav-link @(controller == "Categories" ? "active" : "")" asp-controller="Categories" asp-action="Index">Categories</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "NewsArticles" && ViewContext.RouteData.Values["action"]?.ToString() != "History" ? "active" : "")" asp-controller="NewsArticles" asp-action="Index">Manage News</a>
+                            <li>
+                                <a class="fnm-nav-link @(controller == "NewsArticles" && action != "History" ? "active" : "")" asp-controller="NewsArticles" asp-action="Index">Manage News</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "History" ? "active" : "")" asp-controller="NewsArticles" asp-action="History">My News History</a>
+                            <li>
+                                <a class="fnm-nav-link @(action == "History" ? "active" : "")" asp-controller="NewsArticles" asp-action="History">My History</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Account" && ViewContext.RouteData.Values["action"]?.ToString() == "Profile" ? "active" : "")" asp-controller="Account" asp-action="Profile">Profile</a>
+                            <li>
+                                <a class="fnm-nav-link @(controller == "Account" && action == "Profile" ? "active" : "")" asp-controller="Account" asp-action="Profile">Profile</a>
                             </li>
-                        }
-                    </ul>
-                    <ul class="navbar-nav align-items-md-center">
-                        @if (User.Identity?.IsAuthenticated == true)
-                        {
-                            <li class="nav-item me-md-3">
-                                <span class="fnm-user-chip">
-                                    <span class="fnm-avatar">@initial</span>
-                                    <span>@displayName</span>
-                                    <span class="fnm-role-pill">@role</span>
-                                </span>
-                            </li>
-                            <li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                    <button type="submit" class="btn btn-outline-light btn-sm">Logout</button>
-                                </form>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item"><a class="nav-link" asp-controller="Account" asp-action="Login">Login</a></li>
                         }
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
+
+    @if (IsSectionDefined("SearchBar"))
+    {
+        <div class="fnm-searchbar-bar">
+            <div class="container">
+                @await RenderSectionAsync("SearchBar")
+            </div>
+        </div>
+    }
 
     <div class="container">
         <main role="main" class="fnm-page">
@@ -97,8 +114,8 @@
 
     <footer class="fnm-footer">
         <div class="container d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <span>&copy; 2026 — FU News Management System</span>
-            <span class="text-muted">Greenwich · ClassCode A01</span>
+            <span class="fnm-footer-brand">FU News Management System</span>
+            <span>Greenwich &middot; ClassCode A01</span>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

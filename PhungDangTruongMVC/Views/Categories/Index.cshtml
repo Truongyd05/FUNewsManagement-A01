@@ -5,60 +5,67 @@
 }
 
 <div class="fnm-page-head">
-    <h1 class="fnm-page-title">Categories</h1>
-    <button class="btn btn-success" data-modal-url="@Url.Action("Create")">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+    <div>
+        <span class="fnm-kicker">Newsroom</span>
+        <h1 class="fnm-page-title">Categories</h1>
+    </div>
+    <button class="btn btn-primary" data-modal-url="@Url.Action("Create")">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
         New category
     </button>
 </div>
 
-<form method="get" class="row g-2 mb-4 fnm-filters">
+<form method="get" class="fnm-filters row g-2 align-items-center">
     <div class="col-md-5">
-        <input name="keyword" value="@ViewBag.Keyword" class="form-control" placeholder="Search name or description..." />
+        <input name="keyword" value="@ViewBag.Keyword" class="form-control" placeholder="Search name or description…" aria-label="Search categories" />
     </div>
     <div class="col-md-3">
-        <select name="isActive" class="form-select">
+        <select name="isActive" class="form-select" aria-label="Status">
             <option value="">All statuses</option>
             <option value="true" selected="@(ViewBag.IsActive == true)">Active</option>
             <option value="false" selected="@(ViewBag.IsActive == false)">Inactive</option>
         </select>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-4 d-flex gap-2">
         <button type="submit" class="btn btn-primary">Search</button>
         <a asp-action="Index" class="btn btn-outline-secondary">Reset</a>
     </div>
 </form>
 
-<div class="fnm-table-wrap">
-    <table class="table table-hover align-middle">
-        <thead>
-            <tr><th>ID</th><th>Name</th><th>Description</th><th>Parent</th><th>Articles</th><th>Status</th><th class="text-end">Actions</th></tr>
-        </thead>
-        <tbody>
-            @foreach (var c in Model)
-            {
-                <tr>
-                    <td class="text-muted">@c.CategoryId</td>
-                    <td class="fw-semibold">@c.CategoryName</td>
-                    <td class="text-muted">@c.CategoryDesciption</td>
-                    <td>@(c.ParentCategoryId == c.CategoryId ? "—" : c.ParentCategory?.CategoryName)</td>
-                    <td>
-                        <span class="badge bg-light text-dark border">@(counts.TryGetValue(c.CategoryId, out var n) ? n : 0)</span>
-                    </td>
-                    <td>
-                        @if (c.IsActive == true) { <span class="badge bg-success">Active</span> }
-                        else { <span class="badge bg-secondary">Inactive</span> }
-                    </td>
-                    <td class="text-end text-nowrap">
-                        <button class="btn btn-sm btn-outline-primary fnm-action-btn" data-modal-url="@Url.Action("Edit", new { id = c.CategoryId })">Edit</button>
-                        <button class="btn btn-sm btn-outline-danger fnm-action-btn" data-modal-url="@Url.Action("Delete", new { id = c.CategoryId })">Delete</button>
-                    </td>
-                </tr>
-            }
-            @if (Model.Count == 0)
-            {
-                <tr><td colspan="7" class="fnm-empty text-center text-muted">No categories found.</td></tr>
-            }
-        </tbody>
-    </table>
-</div>
+<table class="fnm-table align-middle">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Parent</th>
+            <th>Articles</th>
+            <th>Status</th>
+            <th class="fnm-cell-actions">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model)
+        {
+            <tr>
+                <td class="fnm-cell-id">@c.CategoryId</td>
+                <td class="fnm-cell-title">@c.CategoryName</td>
+                <td class="fnm-cell-muted">@c.CategoryDesciption</td>
+                <td>@(c.ParentCategoryId == c.CategoryId ? "—" : c.ParentCategory?.CategoryName)</td>
+                <td class="fnm-cell-muted">@(counts.TryGetValue(c.CategoryId, out var n) ? n : 0)</td>
+                <td>
+                    @if (c.IsActive == true) { <span class="fnm-badge is-active">Active</span> }
+                    else { <span class="fnm-badge is-muted">Inactive</span> }
+                </td>
+                <td class="fnm-cell-actions">
+                    <button class="btn btn-sm btn-outline-primary" data-modal-url="@Url.Action("Edit", new { id = c.CategoryId })">Edit</button>
+                    <button class="btn btn-sm btn-outline-danger" data-modal-url="@Url.Action("Delete", new { id = c.CategoryId })">Delete</button>
+                </td>
+            </tr>
+        }
+        @if (Model.Count == 0)
+        {
+            <tr><td colspan="7" class="fnm-empty text-center text-muted">No categories found.</td></tr>
+        }
+    </tbody>
+</table>

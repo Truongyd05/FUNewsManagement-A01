@@ -4,64 +4,69 @@
 }
 
 <div class="fnm-page-head">
-    <h1 class="fnm-page-title">Accounts</h1>
-    <button class="btn btn-success" data-modal-url="@Url.Action("Create")">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+    <div>
+        <span class="fnm-kicker">Administration</span>
+        <h1 class="fnm-page-title">Accounts</h1>
+    </div>
+    <button class="btn btn-primary" data-modal-url="@Url.Action("Create")">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
         New account
     </button>
 </div>
 
-<form method="get" class="row g-2 mb-4 fnm-filters">
+<form method="get" class="fnm-filters row g-2 align-items-center">
     <div class="col-md-5">
-        <input name="keyword" value="@ViewBag.Keyword" class="form-control" placeholder="Search name or email..." />
+        <input name="keyword" value="@ViewBag.Keyword" class="form-control" placeholder="Search name or email…" aria-label="Search accounts" />
     </div>
     <div class="col-md-3">
-        <select name="role" class="form-select">
+        <select name="role" class="form-select" aria-label="Role">
             <option value="">All roles</option>
             <option value="1" selected="@(ViewBag.Role == 1)">Staff</option>
             <option value="2" selected="@(ViewBag.Role == 2)">Lecturer</option>
         </select>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-4 d-flex gap-2">
         <button type="submit" class="btn btn-primary">Search</button>
         <a asp-action="Index" class="btn btn-outline-secondary">Reset</a>
     </div>
 </form>
 
-<div class="fnm-table-wrap">
-    <table class="table table-hover align-middle">
-        <thead>
-            <tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th class="text-end">Actions</th></tr>
-        </thead>
-        <tbody>
-            @foreach (var a in Model)
-            {
-                <tr>
-                    <td class="text-muted">@a.AccountId</td>
-                    <td>
-                        <span class="d-inline-flex align-items-center gap-2">
-                            <span class="fnm-avatar">@(string.IsNullOrEmpty(a.AccountName) ? "?" : a.AccountName.Substring(0, 1).ToUpperInvariant())</span>
-                            @a.AccountName
-                        </span>
-                    </td>
-                    <td>@a.AccountEmail</td>
-                    <td>
-                        @{
-                            var roleName = BusinessObjects.AccountRole.GetName(a.AccountRole);
-                        }
-                        @if (roleName == "Staff") { <span class="badge bg-primary">Staff</span> }
-                        else { <span class="badge bg-secondary">Lecturer</span> }
-                    </td>
-                    <td class="text-end text-nowrap">
-                        <button class="btn btn-sm btn-outline-primary fnm-action-btn" data-modal-url="@Url.Action("Edit", new { id = a.AccountId })">Edit</button>
-                        <button class="btn btn-sm btn-outline-danger fnm-action-btn" data-modal-url="@Url.Action("Delete", new { id = a.AccountId })">Delete</button>
-                    </td>
-                </tr>
-            }
-            @if (Model.Count == 0)
-            {
-                <tr><td colspan="5" class="fnm-empty text-center text-muted">No accounts found.</td></tr>
-            }
-        </tbody>
-    </table>
-</div>
+<table class="fnm-table align-middle">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th class="fnm-cell-actions">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var a in Model)
+        {
+            <tr>
+                <td class="fnm-cell-id">@a.AccountId</td>
+                <td class="fnm-cell-title">
+                    <span class="d-inline-flex align-items-center gap-2">
+                        <span class="fnm-avatar" style="background:#10141a">@(string.IsNullOrEmpty(a.AccountName) ? "?" : a.AccountName.Substring(0, 1).ToUpperInvariant())</span>
+                        @a.AccountName
+                    </span>
+                </td>
+                <td class="fnm-cell-muted">@a.AccountEmail</td>
+                <td>
+                    @{ var roleName = BusinessObjects.AccountRole.GetName(a.AccountRole); }
+                    @if (roleName == "Staff") { <span class="fnm-badge is-active">Staff</span> }
+                    else { <span class="fnm-badge is-muted">Lecturer</span> }
+                </td>
+                <td class="fnm-cell-actions">
+                    <button class="btn btn-sm btn-outline-primary" data-modal-url="@Url.Action("Edit", new { id = a.AccountId })">Edit</button>
+                    <button class="btn btn-sm btn-outline-danger" data-modal-url="@Url.Action("Delete", new { id = a.AccountId })">Delete</button>
+                </td>
+            </tr>
+        }
+        @if (Model.Count == 0)
+        {
+            <tr><td colspan="5" class="fnm-empty text-center text-muted">No accounts found.</td></tr>
+        }
+    </tbody>
+</table>
