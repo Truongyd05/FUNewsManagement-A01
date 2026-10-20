@@ -85,11 +85,15 @@ hr.fnm-rule {
     margin-bottom: 1.1rem;
 }
 
-.fnm-section-head h2 {
+.fnm-section-head h2,
+.fnm-section-head h1 {
     margin: 0;
     font-size: 1.25rem;
     font-weight: 700;
 }
+
+/* Page title (filtered / category view) reads a touch larger than a section head */
+.fnm-section-head h1 { font-size: 1.5rem; }
 
 .fnm-section-head-sm h2 { font-size: 1.02rem; }
 .fnm-section-head .fnm-count {

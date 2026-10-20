@@ -32,6 +32,19 @@ public class HomeController : Controller
             .ToDictionary(g => g.Key, g => g.Count());
         ViewBag.TotalCount = activeArticles.Count;
 
+        // Sidebar rails read from the full active feed too, so they stay
+        // populated even when the current filter returns nothing.
+        ViewBag.TopStories = activeArticles.Take(5).ToList();
+        ViewBag.TrendingTags = activeArticles
+            .SelectMany(n => n.Tags)
+            .Where(t => !string.IsNullOrWhiteSpace(t.TagName))
+            .GroupBy(t => t.TagName!)
+            .OrderByDescending(g => g.Count())
+            .ThenBy(g => g.Key)
+            .Take(12)
+            .Select(g => g.Key)
+            .ToList();
+
         return View(_news.Search(keyword, categoryId, null, activeOnly: true, createdById: null));
     }
 

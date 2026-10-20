@@ -1,0 +1,62 @@
+@using BusinessObjects
+@{
+    var categories = (List<Category>)ViewBag.Categories;
+    var keyword = ViewBag.Keyword as string;
+    var selectedCategory = ViewBag.CategoryId as short?;
+    var categoryCounts = ViewBag.CategoryCounts as Dictionary<short, int> ?? new Dictionary<short, int>();
+    var totalCount = ViewBag.TotalCount as int? ?? 0;
+    var topStories = ViewBag.TopStories as List<NewsArticle> ?? new List<NewsArticle>();
+    var trendingTags = ViewBag.TrendingTags as List<string> ?? new List<string>();
+}
+<aside class="col-lg-4">
+    @if (topStories.Any())
+    {
+        <div class="fnm-sidebar-block">
+            <div class="fnm-section-head fnm-section-head-sm">
+                <h2>Top stories</h2>
+            </div>
+            <ol class="fnm-mostread">
+                @foreach (var s in topStories)
+                {
+                    <li><a asp-controller="Home" asp-action="Details" asp-route-id="@s.NewsArticleId">@s.NewsTitle</a></li>
+                }
+            </ol>
+        </div>
+    }
+
+    <div class="fnm-sidebar-block">
+        <div class="fnm-section-head fnm-section-head-sm">
+            <h2>Browse</h2>
+        </div>
+        <nav class="fnm-cat-list">
+            <a class="fnm-cat-link @(selectedCategory == null ? "active" : "")" asp-controller="Home" asp-action="Index" asp-route-keyword="@keyword">
+                <span>All news</span>
+                <span class="fnm-cat-count">@totalCount</span>
+            </a>
+            @foreach (var c in categories)
+            {
+                categoryCounts.TryGetValue(c.CategoryId, out var count);
+                <a class="fnm-cat-link @(selectedCategory == c.CategoryId ? "active" : "")"
+                   asp-controller="Home" asp-action="Index" asp-route-categoryId="@c.CategoryId" asp-route-keyword="@keyword">
+                    <span>@c.CategoryName</span>
+                    <span class="fnm-cat-count">@count</span>
+                </a>
+            }
+        </nav>
+    </div>
+
+    @if (trendingTags.Any())
+    {
+        <div class="fnm-sidebar-block">
+            <div class="fnm-section-head fnm-section-head-sm">
+                <h2>Topics</h2>
+            </div>
+            <div class="fnm-tag-cloud">
+                @foreach (var t in trendingTags)
+                {
+                    <a class="fnm-tag" asp-controller="Home" asp-action="Index" asp-route-keyword="@t">@t</a>
+                }
+            </div>
+        </div>
+    }
+</aside>
