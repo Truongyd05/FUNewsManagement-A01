@@ -813,6 +813,24 @@ a.fnm-tag:hover { border-color: var(--fnm-accent); color: var(--fnm-accent); }
 .modal-header .btn-close:hover { opacity: 1; }
 
 .modal-body { padding: 1.25rem; }
+
+/* AJAX forms wrap the modal header/body/footer in a <form>. Make that form the
+   flex column Bootstrap expects, otherwise .modal-body cannot scroll on tall
+   dialogs and the Save button is pushed off-screen. */
+.modal-content > form {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: 100%;
+    overflow: hidden;
+}
+
+.modal-content > form > .modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+}
 .modal-footer {
     border-top: 1px solid var(--fnm-rule);
     background: var(--fnm-wash);
